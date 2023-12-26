@@ -1,27 +1,41 @@
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { requestLogin } from '../actions/authActions';
 import styled from 'styled-components';
 
 const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(`Email: ${email}, Password: ${password}`);
+    dispatch(requestLogin(email, password));
+  };
  
   return(
     <BackGround>
    
     <Form>
-    <AuthForm>
+    <AuthForm onSubmit={handleSubmit}>
       <InputBox>
-        <label htmlFor='username'>E-MAIL</label>
-        <input type='text' id='username' name="username"  placeholder="E-mail address" />
+        <label htmlFor='email'>E-MAIL</label>
+        <input type='text' id='email' name="email"  placeholder="E-mail address" onChange={(e) => {setEmail(e.target.value); console.log(e.target.value);}}  required/>
       </InputBox>
       <InputBox>
         <label htmlFor='password'>PASSWORD</label>
-        <input type='password' id='password' name="password"  autoComplete='off' placeholder="Password" />
+        <input type='password' id='password' name="password"  autoComplete='off' placeholder="Password" onChange={(e) => setPassword(e.target.value)} required/>
       </InputBox>
       <HR />
-      <Button>Sign In</Button>
+      <Button type='submit' >Sign In</Button>
+      <a href='/home'>home</a>
       <LinkBox>
       <p>Don't have an account?</p>
-      <a href='http://www.naver.com'>Sign up</a>
+      <a href='./signup'>Sign up</a>
       </LinkBox>
+     
       </AuthForm>
     </Form>
   </BackGround>
