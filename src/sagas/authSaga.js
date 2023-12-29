@@ -13,7 +13,7 @@ function* loginSaga(action) {
 
 function* signupSaga(action) {
   try {
-    const response = yield call(signupApi, action.payload.email, action.payload.password, action.payload.name, action.payload.company, action.payload.agreeTerms, action.payload.agreePersonalInfo);
+    const response = yield call(signupApi, action.payload.email, action.payload.emailConfirm, action.payload.password, action.payload.passwordConfirm, action.payload.name, action.payload.company, action.payload.agreeTerms, action.payload.agreePersonalInfo);
     yield put({ type: SIGNUP_SUCCESS, payload: response.data });
   } catch (error) {
     yield put({ type: SIGNUP_FAILURE, payload: error });

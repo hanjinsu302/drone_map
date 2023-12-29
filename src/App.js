@@ -11,6 +11,7 @@ import Header from './components/Header';
 import MenuBar from './components/MeunBar';
 import DataSetPage from './pages/DataSetPage';
 import ProjectPage from './pages/ProjectPage';
+import DataSetMapPage from './pages/DataSetMapPage';
 
 // 새로운 컴포넌트를 정의합니다.
 function RouteHandler() {
@@ -38,6 +39,7 @@ function App() {
            <Route path='/project' element={<ProjectPage/>} />
            <Route path="/dashboard" element={<DashBoardPage/>} />
            <Route path="/dataset" element={<DataSetPage/>} />
+           <Route path="/dataset/map" element={<DataSetMapPage/>} />
        
       </Routes>
     </BrowserRouter>

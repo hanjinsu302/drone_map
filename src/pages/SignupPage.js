@@ -1,127 +1,39 @@
-
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { requestSignup } from '../actions/authActions';
 import styled from 'styled-components';
 
+
 const SignupPage = () => {
-  const [email, setEmail] = useState('');
-  const [confirmEmail, setConfirmEmail] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  
-  const [termsChecked, setTermsChecked] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    emailConfirm: '',
+    password: '',
+    passwordConfirm: '',
+    name: '',
+    company: '',
+    agreeTerms: false,
+    agreePersonalInfo: false,
+  });
+
+  const { email, emailConfirm, password, passwordConfirm, name, company, agreeTerms, agreePersonalInfo } = formData;
   const dispatch = useDispatch();
 
-  
-
-  const [emailError, setEmailError] = useState(
-    <span style={{ color: 'red' }}>이메일을 입력하세요.</span>
-  );
-  const [confirmEmailError, setConfirmEmailError] = useState(
-    <span style={{ color: 'red' }}>이메일 재확인을 입력하세요.</span>
-  );
-  const [nameError, setNameError] = useState(
-    <span style={{ color: 'red' }}>이름을 입력하세요.</span>
-  );
-  const [passwordError, setPasswordError] = useState(
-    <span style={{ color: 'red' }}>비밀번호를 입력하세요.</span>
-  );
-  const [confirmPasswordError, setConfirmPasswordError] = useState(
-    <span style={{ color: 'red' }}>비밀번호 확인을 입력하세요.</span>
-  );
-  const [termsError, setTermsError] = useState(
-    <span style={{ color: 'red' }}>약관에 동의해야 합니다.</span>
-  );
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-    setEmailError(
-      e.target.validity.valid ? (
-        <span style={{ color: 'green' }}>올바른 이메일 값이 입력되었습니다.</span>
-      ) : (
-        <span style={{ color: 'red' }}>이메일 양식을 확인하세요.</span>
-      )
-    );
-  };
-
-  const handleConfirmEmailChange = (e) => {
-    setConfirmEmail(e.target.value);
-    setConfirmEmailError(
-      e.target.value !== email ? (
-        <span style={{ color: 'red' }}>이메일이 일치하지 않습니다.</span>
-      ) : (
-        <span style={{ color: 'green' }}>이메일이 일치합니다.</span>
-      )
-    );
-  };
-
-  const handleNameChange = (e) => {
-    setName(e.target.value);
-    setNameError(
-      e.target.value.length === 0 ? (
-        <span style={{ color: 'red' }}>이름을 입력하세요.</span>
-      ) : (
-        <span style={{ color: 'green' }}>이름이 입력되었습니다.</span>
-      )
-    );
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-    setPasswordError(
-      e.target.value.length < 8 || e.target.value.length > 32 ? (
-        <span style={{ color: 'red' }}>비밀번호는 8~32자여야 합니다.</span>
-      ) : (
-        <span style={{ color: 'green' }}>올바른 비밀번호입니다.</span>
-      )
-    );
-  };
-
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
-    setConfirmPasswordError(
-      e.target.value !== password ? (
-        <span style={{ color: 'red' }}>비밀번호가 일치하지 않습니다.</span>
-      ) : (
-        <span style={{ color: 'green' }}>비밀번호가 일치합니다.</span>
-      )
-    );
-  };
-
-  const handleTermsChange = (e) => {
-    setTermsChecked(e.target.checked);
-    setTermsError(
-      !e.target.checked ? (
-        <span style={{ color: 'red' }}>약관에 동의해야 합니다.</span>
-      ) : (
-        ''
-      )
-    );
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!termsChecked) {
-      setTermsError(
-        <span style={{ color: 'red' }}>약관에 동의해야 합니다.</span>
-      );
-      return;
+    if (email && emailConfirm && password && passwordConfirm && name && company && agreeTerms && agreePersonalInfo) {
+      dispatch(requestSignup(formData));
+    } else {
+      console.log('Please fill in all required fields and agreements.');
     }
-
-    if (email !== confirmEmail) {
-      alert('Emails do not match!');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alert('Passwords do not match!');
-      return;
-    }
-
-    dispatch(requestSignup(email, password, name));
   };
 
   return (
@@ -130,45 +42,107 @@ const SignupPage = () => {
         <AuthForm onSubmit={handleSubmit}>
           <InputBox>
             <label htmlFor='email'>E-MAIL</label>
-            <input type='email' id='email' onChange={handleEmailChange} required />
-            {emailError}
+            <input
+              type='text'
+              id='email'
+              name='email'
+              placeholder='E-mail address'
+              value={email}
+              onChange={handleChange}
+              required
+            />
           </InputBox>
           <InputBox>
-            <label htmlFor='confirmEmail'>CONFIRM E-MAIL</label>
-            <input type='email' id='confirmEmail' onChange={handleConfirmEmailChange} required />
-            {confirmEmailError}
-          </InputBox>
-          <InputBox>
-            <label htmlFor='name'>NAME</label>
-            <input type='text' id='name' onChange={handleNameChange} required />
-            {nameError}
+            <label htmlFor='emailConfirm'>Confirm E-MAIL</label>
+            <input
+              type='text'
+              id='emailConfirm'
+              name='emailConfirm'
+              placeholder='Confirm E-mail address'
+              value={emailConfirm}
+              onChange={handleChange}
+              required
+            />
           </InputBox>
           <InputBox>
             <label htmlFor='password'>PASSWORD</label>
-            <input type='password' id='password' onChange={handlePasswordChange} required />
-            {passwordError}
+            <input
+              type='password'
+              id='password'
+              name='password'
+              placeholder='Password'
+              value={password}
+              onChange={handleChange}
+              required
+            />
           </InputBox>
           <InputBox>
-            <label htmlFor='confirmPassword'>CONFIRM PASSWORD</label>
-            <input type='password' id='confirmPassword' onChange={handleConfirmPasswordChange} required />
-            {confirmPasswordError}
+            <label htmlFor='passwordConfirm'>Confirm PASSWORD</label>
+            <input
+              type='password'
+              id='passwordConfirm'
+              name='passwordConfirm'
+              placeholder='Confirm Password'
+              value={passwordConfirm}
+              onChange={handleChange}
+              required
+            />
           </InputBox>
-
+          <InputBox>
+            <label htmlFor='name'>NAME</label>
+            <input
+              type='text'
+              id='name'
+              name='name'
+              placeholder='Your Name'
+              value={name}
+              onChange={handleChange}
+              required
+            />
+          </InputBox>
+          <InputBox>
+            <label htmlFor='company'>COMPANY</label>
+            <input
+              type='text'
+              id='company'
+              name='company'
+              placeholder='Your Company Name'
+              value={company}
+              onChange={handleChange}
+            />
+          </InputBox>
+          <InputBox>
+            <label htmlFor='agreeTerms'>
+              <input
+                type='checkbox'
+                id='agreeTerms'
+                name='agreeTerms'
+                checked={agreeTerms}
+                onChange={handleChange}
+                required
+              />
+              I agree to the terms
+            </label>
+          </InputBox>
+          <InputBox>
+            <label htmlFor='agreePersonalInfo'>
+              <input
+                type='checkbox'
+                id='agreePersonalInfo'
+                name='agreePersonalInfo'
+                checked={agreePersonalInfo}
+                onChange={handleChange}
+                required
+              />
+              I agree to the collection of personal information
+            </label>
+          </InputBox>
           <HR />
-          <Checkbox>
-            <input type='checkbox' id='terms' onChange={handleTermsChange} />
-            <label htmlFor='terms'>
-              서비스 이용약관 및 운영원칙에 동의합니다.
-            </label>
-          </Checkbox>
-          <Checkbox>
-            <input type='checkbox' id='terms' onChange={handleTermsChange} />
-            <label htmlFor='terms'>
-              개인정보 수집 이용에 동의합니다.
-            </label>
-          </Checkbox>
-          {termsError}
-          <Button>Sign Up</Button>
+          <Button type='submit'>Sign Up</Button>
+          <LinkBox>
+            <p>Already have an account?</p>
+            <a href='./login'>Log In</a>
+          </LinkBox>
         </AuthForm>
       </Form>
     </BackGround>
@@ -176,6 +150,7 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
+
 
 const BackGround = styled.div`
 
@@ -249,3 +224,4 @@ align-items: center;
 justify-content: center;
 `;
 const Checkbox = styled.div``;
+const LinkBox = styled.div``;

@@ -4,15 +4,37 @@ import { requestLogin } from '../actions/authActions';
 import styled from 'styled-components';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email:'',
+    password:''
+  })
+  const { email, password } = formData;
   const dispatch = useDispatch();
   
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log(`Email: ${email}, Password: ${password}`);
+  //   dispatch(requestLogin(email, password));
+  // };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(`Email: ${email}, Password: ${password}`);
-    dispatch(requestLogin(email, password));
+    if (email && password) {
+      dispatch(requestLogin(formData));
+    } else {
+      console.log('Please fill in all required fields and agreements.');
+    }
   };
  
   return(
@@ -22,11 +44,13 @@ const LoginPage = () => {
     <AuthForm onSubmit={handleSubmit}>
       <InputBox>
         <label htmlFor='email'>E-MAIL</label>
-        <input type='text' id='email' name="email"  placeholder="E-mail address" onChange={(e) => {setEmail(e.target.value); console.log(e.target.value);}}  required/>
+        <input type='text' id='email' name="email"  placeholder="E-mail address" value={email}
+              onChange={handleChange}  required/>
       </InputBox>
       <InputBox>
         <label htmlFor='password'>PASSWORD</label>
-        <input type='password' id='password' name="password"  autoComplete='off' placeholder="Password" onChange={(e) => setPassword(e.target.value)} required/>
+        <input type='password' id='password' name="password"  autoComplete='off' placeholder="Password" value={password}
+              onChange={handleChange} required/>
       </InputBox>
       <HR />
       <Button type='submit' >Sign In</Button>

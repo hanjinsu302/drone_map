@@ -8,6 +8,8 @@ import moreIcon from "../assets/MoreIcon.png"
 
 const ProjectItem = () => {
     const [showModal, setShowModal] = useState(false); // 모달의 상태를 관리하는 state입니다.
+    const [showEditModal, setShowEditModal] = useState(false); 
+    const [showAddModal, setShowAddModal] = useState(false);
     const [showProjectSetItem, setShowProjectSetItem] = useState(false); // 추가
     const [showProjectSetItemInfo, setShowProjectSetItemInfo] = useState(false); // 추가
     const [rotateIcon, setRotateIcon] = useState(false); // 추가
@@ -20,6 +22,12 @@ setShowModal(true);
 const handleCloseModal = () => {
 setShowModal(false);
 }
+const handleOpenEditModal = () => {
+  setShowEditModal(true);
+  }
+  const handleCloseEditModal = () => {
+  setShowEditModal(false);
+  }
 
 const handleToggleProjectSetItem = () => {
   setRotateIcon(!rotateIcon); // 아이콘 회전 상태 변경
@@ -72,11 +80,34 @@ const handleToggleProjectSetItemInfo = () => {
       {showModal && ( // showModal state가 true일 때만 모달 컴포넌트를 렌더링합니다.
       <Modal>
          <button onClick={handleCloseModal}>X</button>
-        <p>프로젝트 편집</p>
-        <p>작업 추가</p>
+        <ProjectEditBtn onClick={handleOpenEditModal}>프로젝트 편집</ProjectEditBtn>
+        <ProjectAddBtn>작업 추가</ProjectAddBtn>
 
       </Modal>
       )}
+       {showEditModal && (//EditModal
+         <EditModalContainer>
+         <ModalHeader>
+           <p>프로젝트 편집</p>
+           <button onClick={handleCloseEditModal}>X</button>
+   
+         </ModalHeader>
+         <DataGroupAddForm>
+           <InputBox>
+             <label>그룹명</label>
+             <input type='text' placeholder='선택한 그룹의 이름 표시'></input>
+           </InputBox>
+           <InputBox>
+             <label>설명</label>
+             <input type='text' style={{height:'10vw'}}></input>
+           </InputBox>
+           <ButtonContainer>
+             <CancelButton onClick={handleCloseEditModal}>Cancel</CancelButton>
+             <SaveButton>Save</SaveButton>
+           </ButtonContainer>
+         </DataGroupAddForm>
+       </EditModalContainer>
+       )}
       </BackGround>
 
     )
@@ -236,3 +267,88 @@ right:10vw;
 border-radius:10px;
 box-shadow: 1px 1px 1px 1px #8E8E8E;
 `;
+
+const EditModalContainer = styled.div`
+position: absolute;
+border-radius:20px;
+width:50vw;
+height:max-contents;
+background-color:white;
+
+
+`;
+
+const ModalHeader =styled.div`
+display:flex;
+align-items: center;
+justify-content: space-between;
+width:100%;
+height: 100px;
+border-bottom: 2px solid #d9d9d9;
+p{
+    margin-left:2vw;
+    font-size:2vw;
+    font-weight:600;
+}
+button{
+    margin-right:2vw;
+}
+`;
+const DataGroupAddForm =styled.div`
+
+`;
+
+
+const InputBox = styled.div`
+background-color:pink;
+margin-top:3vw;
+display:flex;
+width:100%;
+label{
+margin-left:5vw;
+width:100px;
+font-size:25px;
+font-weight:600;
+
+}
+input{
+width: 60%;
+height:3vw;
+border-radius:10px;
+border: 2px solid #4169E1;
+}
+`;
+const ButtonContainer = styled.div`
+display:flex;
+margin-top:50px;
+width:100%;
+height:3.5vw;
+justify-content:center;
+gap:50px;
+margin-bottom:3vw;
+
+`;
+
+const CancelButton = styled.button`
+width:13vw;
+height:100%;
+background-color:#d9d9d9;
+border-radius:10px;
+font-size:20px;
+font-weight:600;
+color: white;
+
+`;
+const SaveButton = styled.button`
+width: 13vw;
+height:100%;
+background-color:#4169E1;
+color: white;
+border-radius:10px;
+font-size:20px;
+font-weight:600;
+`;
+
+
+const ProjectEditBtn = styled.button``;
+const ProjectAddBtn = styled.button``;

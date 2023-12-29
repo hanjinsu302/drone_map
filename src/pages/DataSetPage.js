@@ -4,6 +4,7 @@ import searchIcon from "../assets/Search.png"
 import hamburgerIcon from "../assets/hamburger.png"
 import listIcon from "../assets/list.png"
 import DataGroupItem from '../components/DataGroupItem';
+import DataSetMapPage from './DataSetMapPage';
 
 const DataSetPage = () =>{
 const [showModal, setShowModal] = useState(false); // 모달의 상태를 관리하는 state입니다.
@@ -58,6 +59,8 @@ return(
   )}
 
   <DataGroupItem />
+  {/* <DataSetMapPage /> */}
+  {/* <GroupAddModal /> */}
 
 
 
