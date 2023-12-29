@@ -41,12 +41,7 @@ const MenuBar = () => {
                         <a>System</a>
                         </LinkBox>
                     </Link>
-                    <Link to="/system" style={{textDecoration:'none'}}>
-                    <LinkBox active={location.pathname === '/system'}>
-                        <p>아</p>
-                        <a>System</a>
-                        </LinkBox>
-                    </Link>
+                  
 
                     
                   

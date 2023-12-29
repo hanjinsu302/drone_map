@@ -28,6 +28,12 @@ const handleOpenEditModal = () => {
   const handleCloseEditModal = () => {
   setShowEditModal(false);
   }
+  const handleOpenAddModal = () => {
+    setShowAddModal(true);
+    }
+    const handleCloseAddModal = () => {
+    setShowAddModal(false);
+    }
 
 const handleToggleProjectSetItem = () => {
   setRotateIcon(!rotateIcon); // 아이콘 회전 상태 변경
@@ -81,7 +87,7 @@ const handleToggleProjectSetItemInfo = () => {
       <Modal>
          <button onClick={handleCloseModal}>X</button>
         <ProjectEditBtn onClick={handleOpenEditModal}>프로젝트 편집</ProjectEditBtn>
-        <ProjectAddBtn>작업 추가</ProjectAddBtn>
+        <ProjectAddBtn onClick={handleOpenAddModal}>작업 추가</ProjectAddBtn>
 
       </Modal>
       )}
@@ -107,6 +113,85 @@ const handleToggleProjectSetItemInfo = () => {
            </ButtonContainer>
          </DataGroupAddForm>
        </EditModalContainer>
+       )}
+       {showAddModal && (
+        <ProjectAddContainer>
+          <ProjectAddHeader>
+            프로젝트명 <p onClick={handleCloseAddModal}> close </p>
+          </ProjectAddHeader>
+          <ProjectAddForm>
+            <InputBox>
+            <label>
+              title
+            </label>
+            <input></input>
+            </InputBox>
+            <InputBox>
+            <label>type</label>
+          <select type='text' name="type" id='type' >
+              <option value="">종류선택</option>
+              <option value="type1">3D Reconstruction</option>
+              <option value="type2">Panorama</option>
+              <option value="type3">upload(geotiff)</option>
+              <option value="type4">upload(geojson)</option>
+          
+          </select>
+            </InputBox>
+            <InputBox>
+            <label>mod</label>
+          <select type='text' name="type" id='type' >
+              <option value="">종류선택</option>
+              <option value="type1">basic</option>
+              <option value="type2">advance</option>
+              <option value="type3">professional</option>
+          
+          </select>
+            </InputBox>
+            <InputBox>
+            <label>quality</label>
+          <select type='text' name="type" id='type' >
+              <option value="">종류선택</option>
+              <option value="type1">low</option>
+              <option value="type2">medium</option>
+              <option value="type3">high</option>   
+          </select>
+            </InputBox>
+            <InputBox>
+            <label>CFSM</label>
+          <select type='text' name="type" id='type' >
+              <option value="">종류선택</option>
+              <option value="type1">none</option>
+              <option value="type2">car remove</option>
+          </select>
+            </InputBox>
+            <InputBox>
+            <label>detct marker</label>
+          <select type='text' name="type" id='type' >
+              <option value="">종류선택</option>
+              <option value="type1">none</option>
+              <option value="type2">detect marker</option> 
+          </select>
+            </InputBox>
+            <InputBox>
+            <label>data set</label>
+          <select type='text' name="type" id='type' >
+              <option value="">select project</option>
+              <option value="type1">종류1</option>
+              <option value="type2">종류2</option>
+              <option value="type3">종류3</option>   
+          </select>
+          <select type='text' name="type" id='type' >
+              <option value="">Choose your option</option>
+              <option value="type1">종류1</option>
+              <option value="type2">종류2</option>
+              <option value="type3">종류3</option>   
+          </select>
+            </InputBox>
+            <Btn>작업 시작</Btn>
+          
+          </ProjectAddForm>
+
+        </ProjectAddContainer>
        )}
       </BackGround>
 
@@ -300,7 +385,6 @@ const DataGroupAddForm =styled.div`
 
 
 const InputBox = styled.div`
-background-color:pink;
 margin-top:3vw;
 display:flex;
 width:100%;
@@ -348,6 +432,25 @@ border-radius:10px;
 font-size:20px;
 font-weight:600;
 `;
+
+const ProjectAddContainer = styled.div`
+position: absolute;
+background-color:white;;
+width:50vw;
+height:40vw;
+`;
+
+const ProjectAddHeader = styled.div`
+width:100%;
+height:100px;
+background-color:green;
+`;
+
+const ProjectAddForm = styled.div`
+
+`;
+
+const Btn = styled.button``;
 
 
 const ProjectEditBtn = styled.button``;
