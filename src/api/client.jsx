@@ -1,13 +1,11 @@
 import axios from 'axios';
+import { apikey } from './apikey';
 
-
-
-import {API_KEY} from './api_key'
 
 const client = axios.create({
     baseURL: process.env.REACT_APP_PROXY || "http://api.dromii.com:8080",
     headers: {
-      'apikey': API_KEY,
+      'apikey': apikey,
       'Content-Type': 'application/json'
     }
   });

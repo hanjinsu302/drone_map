@@ -13,6 +13,8 @@ import DataSetPage from './pages/DataSetPage';
 import ProjectPage from './pages/ProjectPage';
 import DataSetMapPage from './pages/DataSetMapPage';
 import SystemPage from './pages/SystemPage';
+import './api/apitest.js'
+import TestPage from './pages/TestPage';
 
 // 새로운 컴포넌트를 정의합니다.
 function RouteHandler() {
@@ -42,6 +44,7 @@ function App() {
            <Route path="/dataset" element={<DataSetPage/>} />
            <Route path="/dataset/map" element={<DataSetMapPage/>} />
            <Route path="/system" element={<SystemPage/>} />
+           <Route path="/test" element={<TestPage/>} />
        
       </Routes>
     </BrowserRouter>

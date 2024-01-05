@@ -1,20 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import searchIcon from "../assets/Search.png"
 import hamburgerIcon from "../assets/hamburger.png"
 import listIcon from "../assets/list.png"
 import groupIcon from "../assets/Group.png"
 import moreIcon from "../assets/MoreIcon.png"
+import { showDatasetGroup } from '../api/apitest';
+
+
+//import { getDatasetGroups } from '../api/apitest.js';
 
 
 
-const DataGroupItem = () => {
+
+
+
+const DataGroupItem = ({ group }) => {
     const [showModal, setShowModal] = useState(false); 
     const [showEditModal, setShowEditModal] = useState(false); 
     const [showAddModal, setShowAddModal] = useState(false);
     const [showDataGroupSetItem, setShowDataGroupSetItem] = useState(false); // 추가
     const [showDataGroupSetItemInfo, setShowDataGroupSetItemInfo] = useState(false); // 추가
     const [rotateIcon, setRotateIcon] = useState(false); // 추가
+
+    const [selectedGroup, setSelectedGroup] = useState({gname: "", gcode: ""});
+
+    function handleGroupClick(group) {
+      setSelectedGroup({gname: group.gname, gcode: group.gcode});
+      handleOpenModal();
+    }
+    
+
+    function handleSaveClick() {
+      // selectedGroup의 상태를 사용하여 API 요청을 보냅니다.
+      //editGroupAPI(selectedGroup); 
+    }
+    
+
+
+
+   
+    
+
+    
+  
+
 
     const [formData, setFormData] = useState({
       gcode:'',
@@ -78,21 +108,35 @@ const handleToggleDataGroupSetItem = () => {
 const handleToggleDataGroupSetItemInfo = () => {
   setShowDataGroupSetItemInfo(!showDataGroupSetItemInfo);
  } // <DataGroupSetItemInfo> 보여짐 상태 변경
+
+//  const [datasetGroups, setDatasetGroups] = useState(null);
+
+//  useEffect(() => {
+//    getDatasetGroups()
+//      .then(data => setDatasetGroups(data.slice(0, 5))) // 처음 5개의 항목만 저장합니다.
+//      .catch(error => console.error(error));
+//  }, []);
+
+//  if (!datasetGroups) {
+//    return <div>Loading...</div>;
+//  }
+ 
     return(
         <BackGround>
-
-        
+          
+     
         <DataGroupContainer>
         <DataGroupHeader>
           <DataGroupIconBox>
-            <DataGroupIcon1 src={hamburgerIcon} onClick={handleOpenModal}/>
-          </DataGroupIconBox> 그룹명(gname)
+          <DataGroupIcon1 src={hamburgerIcon} onClick={() => handleGroupClick(group)}/>
+          </DataGroupIconBox>{group.gname} | {group.gcode}
         </DataGroupHeader>
         <DataGroupSetHeader>
           <DataGroupIconBox>
           <DataGroupIcon2 src={groupIcon} onClick={handleToggleDataGroupSetItem} rotate={rotateIcon}/>
-          </DataGroupIconBox> 데이터셋 갯수 | (dscount)
+          </DataGroupIconBox> 데이터셋 갯수 | {group.dscount}
         </DataGroupSetHeader>
+        
         
 
         {showDataGroupSetItem && (
@@ -116,6 +160,7 @@ const handleToggleDataGroupSetItemInfo = () => {
         </DataGroupSetItem>
         )}
       </DataGroupContainer>
+          
       {showModal && ( // showModal state가 true일 때만 모달 컴포넌트를 렌더링합니다.
       <Modal>
          <button onClick={handleCloseModal}>X</button>
@@ -123,6 +168,7 @@ const handleToggleDataGroupSetItemInfo = () => {
         <DatasetAddBtn onClick={handleOpenAddModal}>데이터셋 추가</DatasetAddBtn>
       </Modal>
       )}
+      {/* 그룹 수정 modal */}
       {showEditModal && (//EditModal
          <EditModalContainer>
          <ModalHeader>
@@ -131,17 +177,22 @@ const handleToggleDataGroupSetItemInfo = () => {
    
          </ModalHeader>
          <DataGroupAddForm>
-           <InputBox>
-             <label>그룹명</label>
-             <input type='text' placeholder='선택한 그룹의 이름 표시'></input>
-           </InputBox>
+         <InputBox>
+  <label>그룹명</label>
+  <input 
+    type='text' 
+    value={selectedGroup.gname} 
+    onChange={(e) => setSelectedGroup({...selectedGroup, gname: e.target.value})}
+  />
+</InputBox>
+
            <InputBox>
              <label>설명</label>
              <input type='text' style={{height:'10vw'}}></input>
            </InputBox>
            <ButtonContainer>
              <CancelButton onClick={handleCloseEditModal}>Cancel</CancelButton>
-             <SaveButton>Save</SaveButton>
+             <SaveButton onClick={handleSaveClick}>Save</SaveButton>
            </ButtonContainer>
          </DataGroupAddForm>
        </EditModalContainer>
@@ -216,6 +267,7 @@ export default DataGroupItem;
 
 const BackGround = styled.div`
 display:flex;
+    
 `;
 
 
@@ -223,9 +275,10 @@ const DataGroupContainer = styled.div`
 width: 35vw;
 height:max-contents;
 background-color:white;
-border-radius:20px;
+border-radius:10px;
 padding-left:10px;
 margin-left:3vw;
+margin-bottom:1vw;
 `;
 
 const DataGroupHeader = styled.div`
@@ -251,7 +304,7 @@ padding-left:2vw;
 `;
 
 const DataGroupSetItemHeader = styled.div`
-background-color:red;
+
 display:flex;
 align-items: center;
 `;
@@ -314,6 +367,7 @@ width:25px;
 `;
 
 const Modal = styled.div`
+z-index:10;
 display:flex;
 flex-direction: column;
 position: absolute;
@@ -365,7 +419,6 @@ const DataGroupAddForm =styled.div`
 
 
 const InputBox = styled.div`
-background-color:pink;
 margin-top:3vw;
 display:flex;
 width:100%;

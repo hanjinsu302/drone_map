@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import searchIcon from "../assets/Search.png"
 import hamburgerIcon from "../assets/hamburger.png"
 import listIcon from "../assets/list.png"
 import DataGroupItem from '../components/DataGroupItem';
 import DataSetMapPage from './DataSetMapPage';
+import { showDatasetGroup } from '../api/apitest';
 
 const DataSetPage = () =>{
 const [showModal, setShowModal] = useState(false); // 모달의 상태를 관리하는 state입니다.
@@ -17,6 +18,30 @@ const handleCloseModal = () => {
 setShowModal(false);
 }
 
+const [groups, setGroups] = useState([]);
+const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    showDatasetGroup('')
+      .then(result => setGroups(result.listgroups))
+      .catch(error => console.error(error));
+  }, []);
+
+  useEffect(() => {
+    showDatasetGroup('')
+      .then(result => setGroups(result.listgroups))
+      .catch(error => console.error(error));
+  }, []);
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredGroups = groups.filter(group => 
+    group.gname.includes(searchTerm) || group.gcode.includes(searchTerm)
+  );
+
+
 return(
 <BackGround>
   <DataSetHeader>
@@ -25,7 +50,12 @@ return(
         <SearchIcon src={searchIcon} />
       </SearchIconBox>
       <SearchForm>
-        <input type='text' placeholder="그룹명 , 데이터 명"></input>
+      <input 
+          type='text' 
+          placeholder="그룹명 , 데이터 명"
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
       </SearchForm>
       <SearchBtn>Search</SearchBtn>
       <GroupAdd onClick={handleOpenModal}> Group Add</GroupAdd>
@@ -36,7 +66,7 @@ return(
 
     <ModalContainer>
       <ModalHeader>
-        <p>그룹 추가</p>
+        <a>그룹 추가</a>
         <button onClick={handleCloseModal}>X</button>
 
       </ModalHeader>
@@ -58,7 +88,13 @@ return(
   </GroupAddModal>
   )}
 
-  <DataGroupItem />
+{filteredGroups.length > 0 ? (
+        filteredGroups.slice().reverse().slice(0, 5).map((group) => (
+          <DataGroupItem key={group.gcode} group={group} />
+        ))
+      ) : (
+        <NoDataError>No datasets found here.</NoDataError>
+      )}
   {/* <DataSetMapPage /> */}
   {/* <GroupAddModal /> */}
 
@@ -82,7 +118,15 @@ height: 100vh;
 background-color:#F2F2F2;
 border-radius: 20px 0px 0px 0px;
 margin-left:65px;
+
 `;
+const NoDataError =styled.p`
+margin-left:10vw;
+  margin-top:15vw;
+  font-size:1vw;
+
+`;
+
 
 const DataSetHeader = styled.div`
 display:flex;
