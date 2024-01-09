@@ -13,7 +13,7 @@ import DataSetPage from './pages/DataSetPage';
 import ProjectPage from './pages/ProjectPage';
 import DataSetMapPage from './pages/DataSetMapPage';
 import SystemPage from './pages/SystemPage';
-import './api/apitest.js'
+//import './api/apitest.js'
 import TestPage from './pages/TestPage';
 
 // 새로운 컴포넌트를 정의합니다.

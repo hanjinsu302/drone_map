@@ -4,9 +4,6 @@ import { loginApi, signupApi, refreshTokenApi } from '../api/authApi';
 import { combineReducers } from 'redux';
 
 
-
-
-
 import {
   FETCH_GROUP_LIST_REQUEST,
   FETCH_GROUP_LIST_SUCCESS,
@@ -71,25 +68,4 @@ export default rootReducer;
 
 
 
-// 
 
-// function authReducer(state = initialState, action) {
-//   switch (action.type) {
-//     case LOGIN_SUCCESS:
-//       return { ...state, isLoggedIn: true, email: action.payload.email };
-//     case LOGIN_FAILURE:
-//       return { ...state, error: action.payload.error };
-//     case SIGNUP_SUCCESS:
-//       return { ...state, isLoggedIn: true, email: action.payload.email };
-//     case SIGNUP_FAILURE:
-//       return { ...state, error: action.payload.error };
-//     case REFRESH_TOKEN_SUCCESS:
-//       return { ...state, isLoggedIn: true, email: action.payload.email };
-//     case REFRESH_TOKEN_FAILURE:
-//       return { ...state, error: action.payload.error };
-//     default:
-//       return state;
-//   }
-// }
-
-//export default authReducer;

@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import GroupItem from '../components/testItem';
-import { showDatasetGroup } from '../api/apitest';
+//import { showDatasetGroup } from '../api/apitest';
 import styled from 'styled-components';
 
 const TestPage = () => {
-  const [groups, setGroups] = useState([]);
+  // const [groups, setGroups] = useState([]);
 
-  useEffect(() => {
-    showDatasetGroup('')
-      .then(result => setGroups(result.listgroups))
-      .catch(error => console.error(error));
-  }, []);
+  // useEffect(() => {
+  //   showDatasetGroup('')
+  //     .then(result => setGroups(result.listgroups))
+  //     .catch(error => console.error(error));
+  // }, []);
 
   return (
     <BackGround>
-      {groups.slice(0,8).map((group) => (
+      {/* {groups.slice(0,8).map((group) => (
         <GroupItem key={group.gcode} group={group} />
-      ))}
+      ))} */}
     </BackGround>
   );
 };

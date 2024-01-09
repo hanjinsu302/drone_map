@@ -5,7 +5,12 @@ import hamburgerIcon from "../assets/hamburger.png"
 import listIcon from "../assets/list.png"
 import groupIcon from "../assets/Group.png"
 import moreIcon from "../assets/MoreIcon.png"
-import { showDatasetGroup } from '../api/apitest';
+import DataSetItem from './DataSetItem' 
+import { showDatasetGroup } from '../api/apitest'; // 그룹 목록 보여주는 API
+import { deleteDatasetGroup } from '../api/apitest'; // 그룹 삭제하는 API
+import {updateDatasetGroup} from '../api/apitest';// 그룹 수정하는 API
+import {getDatasetList} from '../api/apitest'
+import { setTokenInCookie, getTokenFromCookie } from '../api/apitest';
 
 
 //import { getDatasetGroups } from '../api/apitest.js';
@@ -16,6 +21,9 @@ import { showDatasetGroup } from '../api/apitest';
 
 
 const DataGroupItem = ({ group }) => {
+
+
+  //모달 관련 code
     const [showModal, setShowModal] = useState(false); 
     const [showEditModal, setShowEditModal] = useState(false); 
     const [showAddModal, setShowAddModal] = useState(false);
@@ -24,24 +32,74 @@ const DataGroupItem = ({ group }) => {
     const [rotateIcon, setRotateIcon] = useState(false); // 추가
 
     const [selectedGroup, setSelectedGroup] = useState({gname: "", gcode: ""});
+    const [datasetGroups, setDatasetGroups] = useState([]);
+    const [datasets, setDatasets] = useState([]);
 
     function handleGroupClick(group) {
       setSelectedGroup({gname: group.gname, gcode: group.gcode});
       handleOpenModal();
     }
     
+    useEffect(() => {
+      const fetchDatasets = async () => {
+        const accessToken = getTokenFromCookie('accessToken');
+        if (accessToken) {
+          const data = await getDatasetList(selectedGroup.gcode, accessToken);
+          setDatasets(data);
+        }
+      };
+  
+      fetchDatasets();
+    }, [selectedGroup]);
 
-    function handleSaveClick() {
-      // selectedGroup의 상태를 사용하여 API 요청을 보냅니다.
-      //editGroupAPI(selectedGroup); 
+    function handleDeleteGroup(gcode) {
+      // 쿠키에서 accessToken을 가져옵니다.
+      const accessToken = getTokenFromCookie('accessToken');
+      
+      // accessToken이 있는 경우에만 API를 호출합니다.
+      if (accessToken) {
+        deleteDatasetGroup(gcode, accessToken)
+          .then(response => {
+            // API 호출이 성공했을 때의 처리 로직을 여기에 작성합니다.
+            // alert로 '삭제가 성공되었습니다.'라고 띄웁니다.
+            alert('삭제가 성공되었습니다.');
+    
+             return showDatasetGroup(accessToken);
+        })
+        .then(response => {
+          // showDatasetGroup 함수 호출이 성공했을 때의 처리 로직을 여기에 작성합니다.
+          // 상태를 변경하여 화면을 업데이트합니다.
+          setDatasetGroups(response.data);
+        })
+          .catch(error => {
+            // API 호출이 실패했을 때의 처리 로직을 여기에 작성합니다.
+            console.error('그룹 삭제에 실패했습니다.', error);
+          });
+      } else {
+        // accessToken이 없는 경우에 대한 처리를 여기에 작성합니다.
+        console.error('accessToken이 없습니다.');
+      }
     }
+
+
+    //그룹 편집 동작 code
+    const handleSaveClick = () => {
+      const accessToken = getTokenFromCookie('accessToken');
+      updateDatasetGroup(selectedGroup.gcode, selectedGroup.gname, selectedGroup.description, accessToken)
+        .then(data => {
+          if (data.result === 'success') {
+            alert('그룹 정보가 성공적으로 수정되었습니다.');
+            handleCloseEditModal();
+          } else {
+            alert('그룹 정보 수정에 실패하였습니다: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('그룹 정보 수정 실패:', error);
+          alert('그룹 정보 수정에 실패하였습니다: ' + error);
+        });
+    };
     
-
-
-
-   
-    
-
     
   
 
@@ -140,24 +198,25 @@ const handleToggleDataGroupSetItemInfo = () => {
         
 
         {showDataGroupSetItem && (
-        <DataGroupSetItem>
-        <DataGroupSetItemHeader>
-        <DataGroupIcon3 src={moreIcon} onClick={handleToggleDataGroupSetItemInfo} /> 
-        | 철새로 | 아이콘 | 숫자 | Bar
+        // <DataGroupSetItem>
+        // <DataGroupSetItemHeader>
+        // <DataGroupIcon3 src={moreIcon} onClick={handleToggleDataGroupSetItemInfo} /> 
+        // | 철새로 | 아이콘 | 숫자 | Bar
         
-        </DataGroupSetItemHeader>
-        {showDataGroupSetItemInfo && (
-        <DataGroupSetItemInfo>
-          <p>생성날짜</p>
-          <p>Disksdfsdf</p>
-          <DataGroupSetItemBtnBox>
-            <DataGroupSetItemDownBtn>Download</DataGroupSetItemDownBtn>
-            <DataGroupSetItemMapBtn>Map</DataGroupSetItemMapBtn>
-            <a href='/dataset/map'>Map</a>
-          </DataGroupSetItemBtnBox>
-        </DataGroupSetItemInfo>
-        )}
-        </DataGroupSetItem>
+        // </DataGroupSetItemHeader>
+        // {showDataGroupSetItemInfo && (
+        // <DataGroupSetItemInfo>
+        //   <p>생성날짜</p>
+        //   <p>Disksdfsdf</p>
+        //   <DataGroupSetItemBtnBox>
+        //     <DataGroupSetItemDownBtn>Download</DataGroupSetItemDownBtn>
+        //     <DataGroupSetItemMapBtn>Map</DataGroupSetItemMapBtn>
+        //     <a href='/dataset/map'>Map</a>
+        //   </DataGroupSetItemBtnBox>
+        // </DataGroupSetItemInfo>
+        // )}
+        // </DataGroupSetItem>
+        <DataSetItem />
         )}
       </DataGroupContainer>
           
@@ -166,6 +225,9 @@ const handleToggleDataGroupSetItemInfo = () => {
          <button onClick={handleCloseModal}>X</button>
         <DataGroupEditBtn onClick={handleOpenEditModal}>그룹 편집</DataGroupEditBtn>
         <DatasetAddBtn onClick={handleOpenAddModal}>데이터셋 추가</DatasetAddBtn>
+<DataGroupDeleteBtn onClick={() => handleDeleteGroup(group.gcode)}>그룹 삭제</DataGroupDeleteBtn>
+
+
       </Modal>
       )}
       {/* 그룹 수정 modal */}
@@ -187,8 +249,13 @@ const handleToggleDataGroupSetItemInfo = () => {
 </InputBox>
 
            <InputBox>
-             <label>설명</label>
-             <input type='text' style={{height:'10vw'}}></input>
+           <label>설명</label>
+  <input 
+    type='text' 
+    style={{height:'10vw'}} 
+    value={selectedGroup.description}
+    onChange={(e) => setSelectedGroup({...selectedGroup, description: e.target.value})}
+  />
            </InputBox>
            <ButtonContainer>
              <CancelButton onClick={handleCloseEditModal}>Cancel</CancelButton>
@@ -272,13 +339,13 @@ display:flex;
 
 
 const DataGroupContainer = styled.div`
-width: 35vw;
+width: 20vw;
 height:max-contents;
 background-color:white;
 border-radius:10px;
 padding-left:10px;
 margin-left:3vw;
-margin-bottom:1vw;
+margin-bottom:0.5vw;
 `;
 
 const DataGroupHeader = styled.div`
@@ -286,7 +353,7 @@ display:flex;
 align-items: center;
 width:100%;
 height:50px;
-font-size:20px;
+font-size:15px;
 font-weight:600;
 `;
 
@@ -295,7 +362,7 @@ const DataGroupSetHeader = styled.div`
 display:flex;
 align-items: center;
 width:100%;
-height: 50px;
+height: 30px;
 padding-left:1vw;
 `;
 
@@ -354,15 +421,16 @@ height:50px;
 
 `;
 const DataGroupIcon1 = styled.img`
-
-width:50%;
+z-index:1;
+width:40%;
 `;
 const DataGroupIcon2 = styled.img`
 transform: ${({ rotate }) => rotate ? 'rotate(180deg)' : 'rotate(0)'}; 
+z-index:1;
 width:50%;
 `;
 const DataGroupIcon3 = styled.img`
-
+z-index:1;
 width:25px;
 `;
 
@@ -503,3 +571,4 @@ font-size:1vw;
  font-size:1.5vw;
  width:5vw;
  `;
+ const DataGroupDeleteBtn = styled.button``;

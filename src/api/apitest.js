@@ -3,13 +3,17 @@ const apiKey = 'YCmLIC7b8HT6xjd5rL2SPvuMdnYwiQEb'; //추후 .env 파일로 이�
 const contentType = 'application/json';
 //const accessToken = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImtpbGxlcjcwQG5hdmVyLmNvbSIsImlhdCI6MTcwNDI0ODMwMywiZXhwIjoxNzA0MzM0NzAzfQ.II0MSOjFCTNpBd9Ruu8mNeGB70uNyIszhnzXCRB-wgg';
 
+
+
+
+  
 // 쿠키에 토큰 저장 code
-function setTokenInCookie(tokenName, tokenValue) {
+export function setTokenInCookie(tokenName, tokenValue) {
   document.cookie = `${tokenName}=${tokenValue}; path=/`;
 }
 
 // 쿠키에서 토큰 값 가져오는 code
-function getTokenFromCookie(tokenName) {
+export function getTokenFromCookie(tokenName) {
   const cookies = document.cookie.split(';');
   for (let i = 0; i < cookies.length; i++) {
     const cookie = cookies[i].trim();
@@ -21,7 +25,7 @@ function getTokenFromCookie(tokenName) {
 }
 
 // 가장 기본 틀? api 로직
-async function callApi(url, method, body) {
+async function callApi(url, method,  body) {
     const token = getTokenFromCookie('accessToken');
   if (!token) {
     throw new Error('토큰이 없습니다. 로그인이 필요합니다.');
@@ -33,7 +37,7 @@ async function callApi(url, method, body) {
   };
 
   let requestOptions = { method: method, headers: headers };
-  if (method === 'POST' || method === 'PUT') {
+  if (method === 'POST' || method === 'PUT' || method === 'DELETE' || method === 'PATCH' ) {
     requestOptions.body = JSON.stringify(body);
   }
 
@@ -55,10 +59,44 @@ async function callApi(url, method, body) {
       }
     return data;
   } catch (error) {
-    //console.error('API 호출 중 오류가 발생했습니다:', error);
+    console.error('API 호출 중 오류가 발생했습니다:', error);
     throw error;
   }
 }
+
+
+
+
+// 로그인 API 테스트
+export async function loginUser(email, password) {
+  const url = `${apiUrl}/api/v2/login`;
+  const body = {
+    email: email,
+    password: password
+  };
+  try {
+    // const token = getTokenFromCookie('accessToken'); // 쿠키에서 토큰 가져오기
+    // if (!token) {
+    //   throw new Error('토큰이 없습니다. 로그인이 필요합니다.');
+    // }
+    const data = await callApi(url, 'POST', body);
+    if (data && data.token) {
+      setTokenInCookie('accessToken', data.token);
+    }
+    console.log('로그인 결과:', data.result);
+    console.log('Access Token:', data.access);
+    console.log('Refresh Token:', data.refresh);
+  
+    setTokenInCookie('accessToken', data.access);
+    setTokenInCookie('refreshToken', data.refresh);
+  } catch (error) {
+    console.error('로그인 에러:', error);
+  }
+}
+  // 로그인 API 테스트 입력 예시
+  //loginUser('killer70@naver.com', '1234');
+
+
 
 // 토큰 갱신 API 테스트 code
 function refreshToken(refreshToken) {
@@ -75,7 +113,7 @@ refresh: data.refresh
 }));
 }
 // 토큰 갱신 API 테스트 실행
-//refreshToken('eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImtpbGxlcjcwQG5hdmVyLmNvbSIsImlhdCI6MTcwNDI0OTMyOCwiZXhwIjoxNzA0ODU0MTI4fQ.9Q8xDK990wjHDUkDUAbZeUlC2_NmjOad78x52A8JSmc');
+//refreshToken('');
 
 
 // 시스템 상태 조회 API 테스트 code
@@ -93,7 +131,7 @@ checkSystemStatus();
 
 
 // 사용자 등록 API 테스트 code
-async function registerUser(email, emailConfirm, password, passwordConfirm, name, company, agreeTerms, agreePersonalInfo) {
+export async function registerUser(email, emailConfirm, password, passwordConfirm, name, company, agreeTerms, agreePersonalInfo) {
 const url = `${apiUrl}/api/v2/users`;
 const body = {
 email: email,
@@ -114,33 +152,8 @@ console.error('사용자 등록 에러:', error);
 }
 }
 // 사용자 등록 API 테스트 실행
-//registerUser('test@test.com', 'test@test.com', 'test1234', 'test1234', 'John Doe', 'ABC Company', true, true);
+//registerUser('test1234@test.com', 'test1234@test.com', 'test1234', 'test1234', 'John Doe', 'ABC Company', true, true);
 
-
-// 로그인 API 테스트
-async function loginUser(email, password) {
-const url = `${apiUrl}/api/v2/login`;
-const body = {
-email: email,
-password: password
-};
-try {
-const data = await callApi(url, 'POST', body);
-if (data && data.token) {
-setTokenInCookie('accessToken', data.token);
-}
-console.log('로그인 결과:', data.result);
-console.log('Access Token:', data.access);
-console.log('Refresh Token:', data.refresh);
-
-setTokenInCookie('accessToken', data.access);
-setTokenInCookie('refreshToken', data.refresh);
-} catch (error) {
-console.error('로그인 에러:', error);
-}
-}
-// 로그인 API 테스트 입력 예시
-loginUser('killer70@naver.com', '1234');
 
 
 // 데이터셋 그룹 생성 API 테스트
@@ -175,15 +188,15 @@ return callApi(url, 'get', headers)
 }
 
 //데이터셋 그룹 목록 API 테스트 실행
-showDatasetGroup('').then(result => console.log(result));
+//showDatasetGroup('').then(result => console.log(result));
 
 
 
 
 
 //데이터 그룹 삭제 API 테스트
-function deleteDatasetGroup(gcode, accessToken) {
-const url = `${apiUrl}/api/v2/${gcode}/groups`;
+export function deleteDatasetGroup(gcode, accessToken) {
+const url = `${apiUrl}/api/v2/groups/${gcode}`;
 const headers = {
 'apikey': 'YCmLIC7b8HT6xjd5rL2SPvuMdnYwiQEb',
 'Authorization': `Bearer ${accessToken}`,
@@ -198,37 +211,146 @@ gcode: data.gcode
 }));
 }
 // 데이터셋 그룹 삭제 API 테스트 실행
-//deleteDatasetGroup('g_24', 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImtpbGxlcjcwQG5hdmVyLmNvbSIsImlhdCI6MTcwNDI0ODMwMywiZXhwIjoxNzA0MzM0NzAzfQ.II0MSOjFCTNpBd9Ruu8mNeGB70uNyIszhnzXCRB-wgg')
+//deleteDatasetGroup('', '')  //완료
 
 
+// 데이터셋 그룹 수정 API 테스트
+export function updateDatasetGroup(gcode, gname, description, accessToken) {
+  const url = `${apiUrl}/api/v2/groups/${gcode}`;
+  const headers = {
+    'apikey': 'YCmLIC7b8HT6xjd5rL2SPvuMdnYwiQEb',
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  };
+
+  const body = {
+    gname: gname,
+    description: description
+  };
+
+  return callApi(url, 'PATCH', body, headers)
+    .then(data => ({
+      code: data.code,
+      message: data.message,
+      result: data.result,
+      gcode: data.gcode
+    }));
+}
+
+
+// 데이터셋 그룹 수정 API 테스트 실행
+ //updateDatasetGroup('g_22', 'new groueeeeeee', 'new group description', '')  //완료
 
 
 
 //데이터 셋 생성
-function createDataset(accessToken, gcode, dname, category, area, description, type) {
-const url = `${apiUrl}/api/v2/datasets`;
-const headers = {
-'apikey': 'YCmLIC7b8HT6xjd5rL2SPvuMdnYwiQEb',
-'Authorization': `Bearer ${accessToken}`,
-'Content-Type': 'application/json'
+export async function createDataset(accessToken,gcode, dname, category, area, description, type) {
+  const url = `${apiUrl}/api/v2/datasets`;
+  const headers = {
+    'apikey': 'YCmLIC7b8HT6xjd5rL2SPvuMdnYwiQEb',
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
 };
-return callApi(url, 'post', headers, { gcode, dname, category, area, description, type })
-.then(data => ({
-result: data.result,
-dname: data.dname,
-gcode: data.gcode
-}));
-}
-//createDataset('', 'g_20', 'name', 'category', 'area', 'description', 'type')
 
-//데이터 셋 그룹 목록 API 테스트
-function getDatasetList(accessToken) {
-const url = `${apiUrl}/api/v2/datasets`;
-const headers = {
-'apikey': 'YCmLIC7b8HT6xjd5rL2SPvuMdnYwiQEb',
-'Authorization': `Bearer ${accessToken}`,
-'Content-Type': 'application/json'
-};
-return callApi(url, 'get', headers)
-.then(data => data);
+  const body = {
+      gcode: gcode,
+      dname: dname,
+      category: category,
+      area: area,
+      description: description,
+      type: type
+  };
+  
+  try {
+      const data = await callApi(url, 'POST', body, headers);
+      console.log('데이터셋 생성 결과:', data.result);
+  } catch (error) {
+      console.error('데이터셋 생성 에러:', error);
+  }
 }
+
+// 사용 예시
+//createDataset("g_20", "g_20", "red", "Seoul", "This is a dataset about nature in Seoul.", "geojson","");  //완료
+
+
+
+
+
+//데이터셋 목록 API 테스트
+export function getDatasetList(gcode, accessToken) {
+  const url = `${apiUrl}/api/v2/datasets/${gcode}` ;
+  const headers = {
+    'apikey': 'YCmLIC7b8HT6xjd5rL2SPvuMdnYwiQEb',
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  };
+
+  return callApi(url, 'get',  headers)
+    .then(data => data)
+    .catch(error => { console.error(error); return []; });
+}
+//사용예시
+getDatasetList('','')// 아무것도 입력하지 않으면 전체! 앞부분에 gcode 입력시 해당 gcode 데이터만 표시
+
+
+//데이터셋 상세 API 테스트
+function getDataset(dcode, accessToken){
+  const url = `${apiUrl}/api/v2/datasets/info/${dcode}`
+  const headers = {
+    'apikey': 'YCmLIC7b8HT6xjd5rL2SPvuMdnYwiQEb',
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  };
+
+  return callApi(url,"get", headers)
+  .then(data => data)
+  .catch(error => { console.error(error); return []; });
+
+}
+
+getDataset('d_2','')
+
+
+//데이터 수정 API 테스트
+function updateDataset(dcode, dname, category, area, description, type, accessToken) {
+  const url = `${apiUrl}/api/v2/datasets/${dcode}`;
+  const headers = {
+      'apikey': 'YCmLIC7b8HT6xjd5rL2SPvuMdnYwiQEb',
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+  };
+
+  const body = {
+      dname: dname,
+      category: category,
+      area: area,
+      description: description,
+      type: type
+  };
+
+  return callApi(url, 'PATCH', body, headers)
+      .then(response => {
+          if (response.code !== '200' || response.result !== 'success') {
+              throw new Error('데이터셋 수정 API 테스트 실패');
+          }
+
+          if (response.dcode !== dcode) {
+              throw new Error('데이터셋 코드 불일치');
+          }
+
+          console.log('데이터셋 수정 API 테스트 성공');
+          return response;
+      })
+      .catch(error => {
+          console.error('데이터셋 수정 API 테스트 실패:', error);
+      });
+}
+
+// 테스트 실행 예제
+//updateDataset('d_2', 'new dataset name', 'new category', 'new area', 'new description','new type', '')
+
+
+
+
+
+

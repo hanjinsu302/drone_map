@@ -1,11 +1,10 @@
+// apitest.js 파일에서 registerUser 함수를 import 합니다.
+import { registerUser } from '../api/apitest'; 
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { requestSignup } from '../actions/authActions';
 import styled from 'styled-components';
 
-
 const SignupPage = () => {
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     email: '',
     emailConfirm: '',
     password: '',
@@ -13,26 +12,34 @@ const SignupPage = () => {
     name: '',
     company: '',
     agreeTerms: false,
-    agreePersonalInfo: false,
+    agreePersonalInfo: false
   });
 
-  const { email, emailConfirm, password, passwordConfirm, name, company, agreeTerms, agreePersonalInfo } = formData;
-  const dispatch = useDispatch();
-
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: value
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email && emailConfirm && password && passwordConfirm && name && company && agreeTerms && agreePersonalInfo) {
-      dispatch(requestSignup(formData));
-    } else {
-      console.log('Please fill in all required fields and agreements.');
+    try {
+      await registerUser(
+        form.email,
+        form.emailConfirm,
+        form.password,
+        form.passwordConfirm,
+        form.name,
+        form.company,
+        form.agreeTerms,
+        form.agreePersonalInfo
+      );
+      alert('사용자 등록 성공!');
+    } catch (error) {
+      console.error('사용자 등록 에러:', error);
+      alert('사용자 등록 실패. 다시 시도해주세요.');
     }
   };
 
@@ -47,7 +54,7 @@ const SignupPage = () => {
               id='email'
               name='email'
               placeholder='E-mail address'
-              value={email}
+              value={form.email}
               onChange={handleChange}
               required
             />
@@ -59,7 +66,7 @@ const SignupPage = () => {
               id='emailConfirm'
               name='emailConfirm'
               placeholder='Confirm E-mail address'
-              value={emailConfirm}
+              value={form.emailConfirm}
               onChange={handleChange}
               required
             />
@@ -71,7 +78,7 @@ const SignupPage = () => {
               id='password'
               name='password'
               placeholder='Password'
-              value={password}
+              value={form.password}
               onChange={handleChange}
               required
             />
@@ -83,7 +90,7 @@ const SignupPage = () => {
               id='passwordConfirm'
               name='passwordConfirm'
               placeholder='Confirm Password'
-              value={passwordConfirm}
+              value={form.passwordConfirm}
               onChange={handleChange}
               required
             />
@@ -95,7 +102,7 @@ const SignupPage = () => {
               id='name'
               name='name'
               placeholder='Your Name'
-              value={name}
+              value={form.name}
               onChange={handleChange}
               required
             />
@@ -107,7 +114,7 @@ const SignupPage = () => {
               id='company'
               name='company'
               placeholder='Your Company Name'
-              value={company}
+              value={form.company}
               onChange={handleChange}
             />
           </InputBox>
@@ -117,7 +124,7 @@ const SignupPage = () => {
                 type='checkbox'
                 id='agreeTerms'
                 name='agreeTerms'
-                checked={agreeTerms}
+                checked={form.agreeTerms}
                 onChange={handleChange}
                 required
               />
@@ -130,7 +137,7 @@ const SignupPage = () => {
                 type='checkbox'
                 id='agreePersonalInfo'
                 name='agreePersonalInfo'
-                checked={agreePersonalInfo}
+                checked={form.agreePersonalInfo}
                 onChange={handleChange}
                 required
               />
@@ -150,6 +157,7 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
+
 
 
 const BackGround = styled.div`
@@ -225,3 +233,34 @@ justify-content: center;
 `;
 const Checkbox = styled.div``;
 const LinkBox = styled.div``;
+
+// const [formData, setFormData] = useState({
+  //   email: '',
+  //   emailConfirm: '',
+  //   password: '',
+  //   passwordConfirm: '',
+  //   name: '',
+  //   company: '',
+  //   agreeTerms: false,
+  //   agreePersonalInfo: false,
+  // });
+
+  // const { email, emailConfirm, password, passwordConfirm, name, company, agreeTerms, agreePersonalInfo } = formData;
+  // const dispatch = useDispatch();
+
+  // const handleChange = (e) => {
+  //   const { name, value, type, checked } = e.target;
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [name]: type === 'checkbox' ? checked : value,
+  //   }));
+  // };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (email && emailConfirm && password && passwordConfirm && name && company && agreeTerms && agreePersonalInfo) {
+  //     dispatch(requestSignup(formData));
+  //   } else {
+  //     console.log('Please fill in all required fields and agreements.');
+  //   }
+  // };

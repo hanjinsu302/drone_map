@@ -1,24 +1,19 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { requestLogin } from '../actions/authActions';
+//import { useDispatch, useSelector } from 'react-redux';
+//import { requestLogin } from '../actions/authActions';
 import styled from 'styled-components';
+import { loginUser } from '../api/apitest'; // apitest.js 불러오기
+
 
 const LoginPage = () => {
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
-  const [formData, setFormData] = useState({
-    email:'',
-    password:''
-  })
-  const { email, password } = formData;
-  const dispatch = useDispatch();
   
+  
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log(`Email: ${email}, Password: ${password}`);
-  //   dispatch(requestLogin(email, password));
-  // };
+  const { email, password } = formData;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -31,11 +26,15 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email && password) {
-      dispatch(requestLogin(formData));
+      loginUser(email, password); // apitest.js의 loginUser 함수 호출
     } else {
       console.log('Please fill in all required fields and agreements.');
     }
   };
+  
+
+
+  
  
   return(
     <BackGround>
@@ -158,3 +157,27 @@ align-items: center;
 justify-content: center;
   
 `;
+
+
+// const [formData, setFormData] = useState({
+  //   email:'',
+  //   password:''
+  // })
+  // const { email, password } = formData;
+  // const dispatch = useDispatch();
+  // const handleChange = (e) => {
+  //   const { name, value, type, checked } = e.target;
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [name]: type === 'checkbox' ? checked : value,
+  //   }));
+  // };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (email && password) {
+  //     dispatch(requestLogin(formData));
+  //   } else {
+  //     console.log('Please fill in all required fields and agreements.');
+  //   }
+  // };
